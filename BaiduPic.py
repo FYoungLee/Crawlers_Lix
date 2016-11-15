@@ -3,9 +3,9 @@
 # Author: Fyoung Lix
 # Version: v0.000000001
 
-'''
-This program is for pictures downloading from the Baidu
-'''
+"""
+    Pictures downloading from the Baidu
+"""
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
