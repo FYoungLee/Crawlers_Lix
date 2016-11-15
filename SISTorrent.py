@@ -48,8 +48,8 @@ def dl_content_from_topic(topic_list, path_sym):
         except FileExistsError:
             pass
         tar_path += path_sym + each_page[1].replace('/', '-').replace(':', '').replace('<', '').replace('>', '') + path_sym
-        print('({}) Downloading [{}] {} {} to {}'.
-              format(time.ctime()[11:], each_page[0], each_page[1], tar_page, tar_path))
+        print('({}) Downloading {} to {}'.
+              format(time.ctime()[11:], tar_page, tar_path))
         try:
             os.mkdir(tar_path)
         except FileExistsError:
@@ -87,6 +87,7 @@ def dl_content_from_topic(topic_list, path_sym):
             except:
                 print('Writing infomation failed')
 
+
 # get all topic pages from the given sub fourm
 def get_all_topic(onsite, start_page, end_page, path_sym):
     # making pages list from given range
@@ -116,6 +117,9 @@ def get_all_topic(onsite, start_page, end_page, path_sym):
 if __name__ == '__main__':
     # set default timeout when downloading
     socket.setdefaulttimeout(120)
+    # set the base infomation of website
+    UserAgent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.59 Safari/537.36 OPR/41.0.2353.46'
+    basesite = 'http://38.103.161.156/forum/'
     # choose working system
     print('1 Windows')
     print('2 Mac OS or Linux')
@@ -138,32 +142,32 @@ if __name__ == '__main__':
     except:
         print('Dir already exists.')
     print('Download path = {}'.format(download_path))
-    # set the base infomation of website
-    UserAgent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.59 Safari/537.36 OPR/41.0.2353.46'
-    basesite = 'http://38.103.161.156/forum/'
-    # get login name and password to make a cookie file.
-    loginnm = input('Login Name >> ')
-    loginpw = input('Login Password >> ')
-    get_cookies_from_sis(loginnm, loginpw)
     # choose which sub-fourm to download
-    site = ''
     print('1 Asia Uncensored Authorship Seed | 亚洲无码原创区')
     print('2 Asia Censored Authorship Seed | 亚洲有码原创区')
     print('3 Western Uncensored Authorship Seed | 欧美无码原创区')
     print('4 Anime Authorship Seed | 成人游戏动漫原创区')
     cmd = input('>> ')
+    site = ''
     if cmd == '1':
         site = basesite + 'forum-143-'
+        download_path += path_symbol + '亚洲无码原创区'
     elif cmd == '2':
         site = basesite + 'forum-230-'
+        download_path += path_symbol + '亚洲有码原创区'
     elif cmd == '3':
         site = basesite + 'forum-229-'
+        download_path += path_symbol + '欧美无码原创区'
     elif cmd == '4':
         site = basesite + 'forum-231-'
+        download_path += path_symbol + '成人游戏动漫原创区'
     else:
         print('Bad input, bye.')
         exit()
-
+    # get login name and password to make a cookie file.
+    loginnm = input('Login Name >> ')
+    loginpw = input('Login Password >> ')
+    get_cookies_from_sis(loginnm, loginpw)
     # load cookie infomation from the file
     cookie_file = 'siscookies.txt'
     cookie = cookiejar.MozillaCookieJar()
