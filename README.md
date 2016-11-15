@@ -6,5 +6,5 @@ The store of all my crawler practiced code.
 - BingPic.py  ==                [Download any pictures you want from Bing](BingPic.py)
 - FundSelector.py ==            [Download good fund from fund.easymoney.com](FundSelector.py)
 - FundHistoryDataCrawler.py ==  [Crawl all History data of funds from easymoney website](FundHistoryDataCrawler.py)
-- SISTorrent.py ==              [Download all torrents, pictures from SiS](SISTorrent.py)
+- SISTorrent.py ==              [Download torrents and pictures from SiS](SISTorrent.py)
 
