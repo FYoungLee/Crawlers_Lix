@@ -85,7 +85,9 @@ if __name__ == '__main__':
     kw = pics.set_keywd()
     # start crawling
     pics.get_start(kw)
-    # saving all pictures
+    # get a BeautifulSoup Object
     psoup = pics.make_soup()
+    # Creating Dir
     spath = pics.create_dir(kw)
+    # saving all pictures
     pics.save_pic(psoup, spath)
