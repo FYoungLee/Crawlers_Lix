@@ -244,7 +244,15 @@ if __name__ == '__main__':
         if cmd == '1':
             funds = []
             fs = FundSelctor()
-            mylist = fs.get_list(5, '1nzf', '6yzf', '3yzf', '1yzf', 'zzf')
+            try:
+                pm = int(input('排名筛选百分比 (1 - 50)>> '))
+            except ValueError:
+                print('请输入正确的数值')
+                continue
+            if pm < 1 or pm > 50:
+                print('超出范围')
+                continue
+            mylist = fs.get_list(pm, '1nzf', '6yzf', '3yzf', '1yzf', 'zzf')
             for each in mylist:
                 print(each, '下载中...')
                 sg = fs.dl_fund_info(each)

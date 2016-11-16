@@ -164,6 +164,10 @@ if __name__ == '__main__':
     else:
         print('Bad input, bye.')
         exit()
+    try:
+        os.mkdir(download_path)
+    except:
+        print('Dir already exists.')
     # get login name and password to make a cookie file.
     loginnm = input('Login Name >> ')
     loginpw = input('Login Password >> ')
