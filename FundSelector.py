@@ -190,34 +190,40 @@ class FundSelctor:
     def dl_fund_info(self, fid):
         pages = urlopen("http://fund.eastmoney.com/pingzhongdata/{}.js".format(fid)).read().decode('utf-8').split(';')
         # 基金名字
-        fname = pages[1][pages[1].find('\"'):].replace('\"', '')
+        index = self.get_value_position('基金或股票信息', pages)
+        fname = pages[index][pages[index].find('\"'):].replace('\"', '')
         # 净值库
+        index = self.get_value_position('单位净值', pages)
         cvaldb = {}
-        tval = [each.split(',') for each in pages[13][pages[13].find('[') + 1:-1].replace('{', '').split('},')]
+        tval = [each.split(',') for each in pages[index][pages[index].find('[') + 1:-1].replace('{', '').split('},')]
         for eachday in tval:
             try:
                 cvaldb[date.fromtimestamp(int(eachday[0].split(':')[1]) / 1000).isoformat()] \
                     = [float(eachday[1].split(':')[1]), float(eachday[2].split(':')[1])]
             except IndexError as err:
-                print('读取基金净值出错：', err)
+                print(eachday, '读取基金净值出错：', err)
 
-        # continue
-        # # 累计净值库
+        # 累计净值库
+        index = self.get_value_position('累计净值', pages)
         tvaldb = {}
-        tval = [each.split(',') for each in pages[14][pages[14].find('[') + 1:-2].replace('[', '').split('],')]
+        tval = [each.split(',') for each in pages[index][pages[index].find('[') + 1:-2].replace('[', '').split('],')]
         for eachday in tval:
             try:
                 tvaldb[date.fromtimestamp(int(eachday[0]) / 1000).isoformat()] = float(eachday[1])
             except IndexError as err:
-                print('读取累计净值出错：', err)
+                print(eachday, '读取累计净值出错：', err)
+            except ValueError as err:
+                print(eachday[1], ' : ', err)
         # 业绩评分
+        index = self.get_value_position('业绩评价', pages)
         try:
-            fund_score = re.match(r'.*avr":"(\d*.\d*)"', pages[21].replace('\n', '')).group(1)
+            fund_score = re.match(r'.*avr":"(\d*.\d*)"', pages[index].replace('\n', '')).group(1)
         except:
             fund_score = 0
         # 基金经理, 经理评分
+        index = self.get_value_position('现任基金经理', pages)
         managers = []
-        managerpage = pages[22].replace('\n', '')
+        managerpage = pages[index].replace('\n', '')
         manager_id = re.findall(r'"id":"(\d*)"', managerpage)
         manager_name = re.findall(r'"name":"(\w*)"', managerpage)
         manager_score = re.findall(r'"avr":"(\d*.\d*|\w+)"', managerpage)
@@ -226,7 +232,8 @@ class FundSelctor:
                 manager_score[each] = 0
             managers.append([manager_id[each], manager_name[each], manager_score[each]])
         # 基金规模
-        scalepage = pages[18].replace('\n', '')
+        index = self.get_value_position('规模变动', pages)
+        scalepage = pages[index].replace('\n', '')
         scaledate = re.match(r'.*categories":\[(.+?)\]', scalepage).group(1).split(',')
         eachscale = [each.split(',')[0].split(':')[1] for each in
                      re.match(r'.*series":\[(.+?)\]', scalepage).group(1).replace('{', '').split('},')]
@@ -234,6 +241,14 @@ class FundSelctor:
 
         return {'ID': fid, 'name': fname, 'value': cvaldb, 'tvalue': tvaldb,
                 'score': fund_score, 'manager': managers, 'scale': scales}
+
+    def get_value_position(self, val, _list):
+        index = 0
+        for each in _list:
+            if val in each:
+                break
+            index += 1
+        return index
 
 if __name__ == '__main__':
     while True:

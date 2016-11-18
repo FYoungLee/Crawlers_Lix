@@ -14,7 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from bs4 import BeautifulSoup
 from urllib.request import urlretrieve
-import os
+import os, threading
 
 
 class BaiduPictureDownloader:

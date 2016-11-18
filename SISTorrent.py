@@ -138,6 +138,7 @@ if __name__ == '__main__':
         savepath = os.getcwd()
     download_path = savepath + path_symbol + 'SIS'
     try:
+        print('Creating Dir : {}'.format(download_path))
         os.mkdir(download_path)
     except:
         print('Dir already exists.')
@@ -165,6 +166,7 @@ if __name__ == '__main__':
         print('Bad input, bye.')
         exit()
     try:
+        print('Creating Dir : {}'.format(download_path))
         os.mkdir(download_path)
     except:
         print('Dir already exists.')
