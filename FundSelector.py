@@ -71,9 +71,9 @@ class FundData(dict):
             获得单位净值
         """
         try:
-            return self['value'][date.fromtimestamp(day).isoformat()]
+            return self['value'][date.fromtimestamp(day).isoformat()][0]
         except KeyError:
-            return self.get_tval(day - 86400)
+            return self.get_cval(day - 86400)
 
     def get_tval(self, day):
         """
