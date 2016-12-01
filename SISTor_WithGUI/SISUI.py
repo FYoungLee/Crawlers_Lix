@@ -58,13 +58,13 @@ class SISMainWindow(QWidget):
             return
         subforum = self.sub_forum_addr()
         pages = int(self.pages_line.text())
-        threads = int(self.thread_menu.currentText())
-        if pages < threads:
+        self.current_working_threads = int(self.thread_menu.currentText())
+        if pages < self.current_working_threads:
             QMessageBox.critical(self, 'Threads error', 'Threads must less than pages, reset again.\n'
                                                         '线程数需要小于页数，请重新设置')
             return
         # calculating the pages for each thread
-        divined_pages = int(pages / threads)
+        divined_pages = int(pages / self.current_working_threads)
         start_page = 1
         usrnm = self.login_id_line.text()
         usrpw = self.login_pw_line.text()
@@ -72,14 +72,24 @@ class SISMainWindow(QWidget):
         pics = int(self.pic_menu.currentText())
         self.current_progress = 0
         self.max_topics = 0
-        for e in range(threads):
+        self.start_btn.setEnabled(False)
+        self.threads_finished = 0
+        for e in range(self.current_working_threads):
             end_page = start_page + divined_pages - 1
             thread = SIS.SISObj(e, self.url_line.text(), subforum, usrnm, usrpw, path, start_page, end_page, pics, self)
             thread.trigger_text.connect(self.update_info_window)
             thread.trigger_progress.connect(self.progress_received)
             thread.trigger_sent_all_topics_quantity.connect(self.topics_quantity_received)
+            thread.trigger_done.connect(self.thread_finished)
             thread.start()
             start_page += divined_pages
+
+    def thread_finished(self, done):
+        self.threads_finished += done
+        if self.threads_finished == self.current_working_threads:
+            self.start_btn.setEnabled(True)
+            self.threads_finished = 0
+            self.current_working_threads = 0
 
     def init_ui(self):
         self.setToolTip('SIS Torrents Downloader '

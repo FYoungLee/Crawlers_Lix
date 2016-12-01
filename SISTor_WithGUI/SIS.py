@@ -17,6 +17,7 @@ class SISObj(QThread):
     trigger_text = pyqtSignal(str)
     trigger_progress = pyqtSignal(int)
     trigger_sent_all_topics_quantity = pyqtSignal(int)
+    trigger_done = pyqtSignal(int)
 
     def __init__(self, tn, url='', forum='', username='', password='', save_dir='', start=1, end=2, pics=0, parent=None):
         super(SISObj, self).__init__(parent)
@@ -171,6 +172,7 @@ class SISObj(QThread):
             # download pictures
             self.save_pictures(page_info, tar_path)
             self.trigger_progress.emit(1)
+        self.trigger_done.emit(1)
 
     def save_torrents(self, pagesoup, tar_path):
         page_tors = pagesoup.find_all('a', {'href': re.compile(r'attachment')})
