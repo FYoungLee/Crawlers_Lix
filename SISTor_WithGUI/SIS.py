@@ -9,6 +9,7 @@ import re
 import os
 import datetime
 import requests
+import random
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
 
@@ -51,7 +52,12 @@ class SISObj(QThread):
             self.trigger_text.emit('Unkown Operate System.(未知操作系统)')
 
     def get_headers(self):
-        return ''
+        UserAgents = ['Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9a2pre) Gecko/20061231 Minefield/3.0a2pre',
+                      'Mozilla/5.0 (X11; U; Linux x86_64; de; rv:1.8.1.12) Gecko/20080203 SUSE/2.0.0.12-6.1 Firefox/2.0.0.12',
+                      'Mozilla/5.0 (X11; U; FreeBSD i386; ru-RU; rv:1.9.1.3) Gecko/20090913 Firefox/3.5.3',
+                      'Mozilla/5.0 (X11; U; Linux i686; fr; rv:1.9.0.1) Gecko/2008070206 Firefox/2.0.0.8',
+                      'Mozilla/4.0 (compatible; MSIE 5.0; Linux 2.4.20-686 i686) Opera 6.02  [en]']
+        return random.choice(UserAgents)
 
     def get_sis_cookies(self, username, password):
         login_data = {'action': 'login',

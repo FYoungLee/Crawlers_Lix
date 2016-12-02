@@ -21,76 +21,6 @@ class SISMainWindow(QWidget):
         self.update_progress()
         self.show()
 
-    def get_forum_address(self):
-        with open('sis_addr.dat', 'r') as f:
-            return f.readline()
-
-    def check_url(self):
-        if requests.head(self.url_line.text()).ok:
-            self.url_label.setText('OK')
-            with open('sis_addr.dat', 'w') as f:
-                f.write(self.url_line.text())
-        else:
-            self.url_label.setText('Failed')
-            failed_msg = 'The address is not available now, try other one.' \
-                         '\nPlease keep the address form: http://example/forum/' \
-                         '\n前论坛地址已经不可用了，请输入新的地址。\n新地址输入，请务必保持正确的格式，包括符号！'
-            QMessageBox.warning(self, 'Address Failed', failed_msg)
-
-    def path_btn_clicked(self):
-        path = QFileDialog.getExistingDirectory()
-        if os.name == 'nt':
-            path = path.replace('/', '\\')
-        if path == '':
-            return
-        self.path_line.setText(path+self.path_slash)
-
-    def start_btn_clicked(self):
-        if 'Failed' in self.url_label.text():
-            QMessageBox.critical(self, 'URL error', 'In case the url is not correct, download failed\n'
-                                                    '站点不可用，不能下载。')
-            return
-        if self.path_line.text() == '':
-            QMessageBox.critical(self, 'Path error', 'Please provide correct saving direction.\n请输入正确的保存路径')
-            return
-        if self.pages_line.text().isdigit() is False:
-            QMessageBox.critical(self, 'Pages error', 'How many pages you want to download?\n请输入正确的下载页数')
-            return
-        subforum = self.sub_forum_addr()
-        pages = int(self.pages_line.text())
-        self.current_working_threads = int(self.thread_menu.currentText())
-        if pages < self.current_working_threads:
-            QMessageBox.critical(self, 'Threads error', 'Threads must less than pages, reset again.\n'
-                                                        '线程数需要小于页数，请重新设置')
-            return
-        # calculating the pages for each thread
-        divined_pages = int(pages / self.current_working_threads)
-        start_page = 1
-        usrnm = self.login_id_line.text()
-        usrpw = self.login_pw_line.text()
-        path = self.path_line.text()
-        pics = int(self.pic_menu.currentText())
-        self.current_progress = 0
-        self.max_topics = 0
-        self.start_btn.setEnabled(False)
-        self.threads_finished = 0
-        for e in range(self.current_working_threads):
-            end_page = start_page + divined_pages - 1
-            thread = SIS.SISObj(e, self.url_line.text(), subforum, usrnm, usrpw, path, start_page, end_page, pics, self)
-            thread.trigger_text.connect(self.update_info_window)
-            thread.trigger_progress.connect(self.progress_received)
-            thread.trigger_sent_all_topics_quantity.connect(self.topics_quantity_received)
-            thread.trigger_done.connect(self.thread_finished)
-            thread.start()
-            start_page += divined_pages
-
-    def thread_finished(self, done):
-        self.threads_finished += done
-        if self.threads_finished == self.current_working_threads:
-            self.start_btn.setEnabled(True)
-            self.threads_finished = 0
-            self.current_working_threads = 0
-
     def init_ui(self):
         self.setToolTip('SIS Torrents Downloader '
                         '\n第一会所论坛种子下载器')
@@ -213,6 +143,76 @@ class SISMainWindow(QWidget):
         self.setLayout(self.allLayout)
 
         self.setWindowTitle('SIS Torrents Downloader v1.0 by Fyang (肥羊)')
+
+    def get_forum_address(self):
+        with open('sis_addr.dat', 'r') as f:
+            return f.readline()
+
+    def check_url(self):
+        if requests.head(self.url_line.text()).ok:
+            self.url_label.setText('OK')
+            with open('sis_addr.dat', 'w') as f:
+                f.write(self.url_line.text())
+        else:
+            self.url_label.setText('Failed')
+            failed_msg = 'The address is not available now, try other one.' \
+                         '\nPlease keep the address form: http://example/forum/' \
+                         '\n前论坛地址已经不可用了，请输入新的地址。\n新地址输入，请务必保持正确的格式，包括符号！'
+            QMessageBox.warning(self, 'Address Failed', failed_msg)
+
+    def path_btn_clicked(self):
+        path = QFileDialog.getExistingDirectory()
+        if os.name == 'nt':
+            path = path.replace('/', '\\')
+        if path == '':
+            return
+        self.path_line.setText(path+self.path_slash)
+
+    def start_btn_clicked(self):
+        if 'Failed' in self.url_label.text():
+            QMessageBox.critical(self, 'URL error', 'In case the url is not correct, download failed\n'
+                                                    '站点不可用，不能下载。')
+            return
+        if self.path_line.text() == '':
+            QMessageBox.critical(self, 'Path error', 'Please provide correct saving direction.\n请输入正确的保存路径')
+            return
+        if self.pages_line.text().isdigit() is False:
+            QMessageBox.critical(self, 'Pages error', 'How many pages you want to download?\n请输入正确的下载页数')
+            return
+        subforum = self.sub_forum_addr()
+        pages = int(self.pages_line.text())
+        self.current_working_threads = int(self.thread_menu.currentText())
+        if pages < self.current_working_threads:
+            QMessageBox.critical(self, 'Threads error', 'Threads must less than pages, reset again.\n'
+                                                        '线程数需要小于页数，请重新设置')
+            return
+        # calculating the pages for each thread
+        divined_pages = int(pages / self.current_working_threads)
+        start_page = 1
+        usrnm = self.login_id_line.text()
+        usrpw = self.login_pw_line.text()
+        path = self.path_line.text()
+        pics = int(self.pic_menu.currentText())
+        self.current_progress = 0
+        self.max_topics = 0
+        self.start_btn.setEnabled(False)
+        self.threads_finished = 0
+        for e in range(self.current_working_threads):
+            end_page = start_page + divined_pages - 1
+            thread = SIS.SISObj(e, self.url_line.text(), subforum, usrnm, usrpw, path, start_page, end_page, pics, self)
+            thread.trigger_text.connect(self.update_info_window)
+            thread.trigger_progress.connect(self.progress_received)
+            thread.trigger_sent_all_topics_quantity.connect(self.topics_quantity_received)
+            thread.trigger_done.connect(self.thread_finished)
+            thread.start()
+            start_page += divined_pages
+
+    def thread_finished(self, done):
+        self.threads_finished += done
+        if self.threads_finished == self.current_working_threads:
+            self.start_btn.setEnabled(True)
+            self.threads_finished = 0
+            self.current_working_threads = 0
 
     def update_info_window(self, text):
         self.output_window.append('[{}] {}'.format(datetime.now().strftime('%H:%M:%S'), text))
