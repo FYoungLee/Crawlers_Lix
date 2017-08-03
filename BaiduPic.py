@@ -20,7 +20,7 @@ import os, threading
 class BaiduPictureDownloader:
     # initialize the webdriver using PhantomJS
     def __init__(self):
-        self.BDdriver = webdriver.PhantomJS('/Users/mac/MyCode/phantomjs211/bin/PhantomJS')
+        self.BDdriver = webdriver.PhantomJS('/Applications/PhantomJS/bin/PhantomJS')
 
     # get keywords from user
     def set_keywd(self):
